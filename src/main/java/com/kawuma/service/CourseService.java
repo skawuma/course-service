@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.kawuma.dto.Course;
 
+@Component
 @Service
 public class CourseService {
 

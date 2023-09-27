@@ -2,120 +2,30 @@ package com.kawuma.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Course {
 
    private int courseId;
    private String name;
    private String trainerName;
    private String duration;//days
+   //convert to a string Object
+   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyy")
    private Date startDate;
+    private String courseType;//Live or recording
+     private double fees;
    private boolean isCertifiedAvailable;
-   private String discription;
+   private String description;
    
 
-   
-public Course() {
-
-}
-
-
-
-
-public Course(int courseId, String name, String trainerName, String duration, Date startDate,
-        boolean isCertifiedAvailable, String discription) {
-    this.courseId = courseId;
-    this.name = name;
-    this.trainerName = trainerName;
-    this.duration = duration;
-    this.startDate = startDate;
-    this.isCertifiedAvailable = isCertifiedAvailable;
-    this.discription = discription;
-}
-
-
-
-
-public int getCourseId() {
-    return courseId;
-}
-
-
-
-public void setCourseId(int courseId) {
-    this.courseId = courseId;
-}
-
-
-
-public String getName() {
-    return name;
-}
-
-
-
-public void setName(String name) {
-    this.name = name;
-}
-
-
-
-public String getTrainerName() {
-    return trainerName;
-}
-
-
-
-public void setTrainerName(String trainerName) {
-    this.trainerName = trainerName;
-}
-
-
-
-public String getDuration() {
-    return duration;
-}
-
-
-
-public void setDuration(String duration) {
-    this.duration = duration;
-}
-
-
-
-public Date getStartDate() {
-    return startDate;
-}
-
-
-
-public void setStartDate(Date startDate) {
-    this.startDate = startDate;
-}
-
-
-
-public boolean isCertifiedAvailable() {
-    return isCertifiedAvailable;
-}
-
-
-
-public void setCertifiedAvailable(boolean isCertifiedAvailable) {
-    this.isCertifiedAvailable = isCertifiedAvailable;
-}
-
-
-
-public String getDiscription() {
-    return discription;
-}
-
-
-
-public void setDiscription(String discription) {
-    this.discription = discription;
-}
+ 
 
 
    
