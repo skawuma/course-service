@@ -7,16 +7,23 @@ import java.util.Random;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.kawuma.dao.CourseDao;
 import com.kawuma.dto.Course;
+import com.kawuma.dto.CourseResponseDTO;
+
+import lombok.AllArgsConstructor;
 
 @Component
 @Service
+@AllArgsConstructor
 public class CourseService {
 
-    private List<Course> courseDatabase = new ArrayList<>();
+    private CourseDao courseDao;
+
+    // private List<Course> courseDatabase = new ArrayList<>();
 
     // create course object in DB
-    public Course onboardNewCourse(Course course) {
+    public Course onboardNewCourse(CourseResponseDTO courseRequestCourseDTO) {
 
         course.setCourseId(new Random().nextInt(3756));
         courseDatabase.add(course);
