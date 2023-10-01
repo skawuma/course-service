@@ -1,12 +1,13 @@
 package com.kawuma.util;
 
 import com.kawuma.dto.CourseRequestDTO;
+import com.kawuma.dto.CourseResponseDTO;
 import com.kawuma.entity.CourseEntity;
 
 public class AppUtils {
 
     // DTO -> ENTITY
-    public CourseEntity mapDTOToEntity(CourseRequestDTO courseRequestDTO) {
+    public static  CourseEntity mapDTOToEntity(CourseRequestDTO courseRequestDTO) {
         CourseEntity courseEntity = new CourseEntity();
         courseEntity.setCourseId(courseRequestDTO.getCourseId());
         courseEntity.setName(courseRequestDTO.getName());
@@ -20,5 +21,22 @@ public class AppUtils {
         return courseEntity;
 
     }
+ public static CourseResponseDTO mapEntityToDTO(CourseEntity courseEntity){
+    
+         CourseResponseDTO courseResponseDTO = new CourseResponseDTO();
+        courseResponseDTO.setCourseId(courseEntity.getCourseId());
+        courseResponseDTO.setName(courseEntity.getName());
+       courseResponseDTO.setTrainerName(courseEntity.getTrainerName());
+       courseResponseDTO.setDuration(courseEntity.getDuration());
+       courseResponseDTO.setStartDate(courseEntity.getStartDate());
+        courseResponseDTO.setCourseType(courseEntity.getCourseType());
+      courseResponseDTO.setFees(courseEntity.getFees());
+        courseResponseDTO.setCertifiedAvailable(courseEntity.isCertifiedAvailable());
+        courseResponseDTO.setDescription(courseEntity.getDescription());
+        return courseResponseDTO;
 
+
+
+
+ }
 }
