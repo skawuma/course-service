@@ -69,7 +69,7 @@ public class CourseService {
     }
 
     // update the course
-    public CourseResponseDTO updatCourse(int courseId, CourseRequestDTO courseRequestDTO) {
+    public CourseResponseDTO updateCourse(int courseId, CourseRequestDTO courseRequestDTO) {
        CourseEntity existingCourseEntity = courseDao.findById(courseId).orElseThrow(null);
        existingCourseEntity.setCourseId(courseRequestDTO.getCourseId());
        existingCourseEntity.setName(courseRequestDTO.getName());
@@ -83,5 +83,6 @@ public class CourseService {
       CourseEntity updatedCourseEntity =courseDao.save(existingCourseEntity);
         return AppUtils.mapEntityToDTO(updatedCourseEntity);
     }
+
 
 }

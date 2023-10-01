@@ -1,5 +1,7 @@
 package com.kawuma.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,44 +15,58 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.kawuma.dto.Course;
+import com.kawuma.dto.CourseRequestDTO;
+import com.kawuma.dto.CourseResponseDTO;
+import com.kawuma.dto.ServiceResponse;
 import com.kawuma.service.CourseService;
+
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/course")
+@AllArgsConstructor
 public class CourseController {
-
-
-    @Autowired
-    private CourseService courseService;
+       private CourseService courseService;
 
     // public CourseController(CourseService courseService) {
     //     this.courseService = courseService;
 
     // }
-
     @PostMapping("/add")
-    public ResponseEntity<?> addCourse(@RequestBody Course course) {
-        Course newCourse = courseService.onboardNewCourse(course);
-        return new ResponseEntity<>(newCourse, HttpStatus.CREATED);// 201
+    public ServiceResponse<CourseResponseDTO> addCourse(@RequestBody CourseRequestDTO courseRequestDTO) {
+
+     ServiceResponse<CourseResponseDTO> serviceResponse= new ServiceResponse<>();
+       try {
+         CourseResponseDTO newCourse = courseService.onboardNewCourse(courseRequestDTO);
+        serviceResponse.setStatus(HttpStatus.CREATED);
+        serviceResponse.setResponse(newCourse);  
+
+       } catch (Exception e) {
+       serviceResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+
+        //return new ServiceResponse<>( HttpStatus.CREATED,newCourse);// 201
+        return serviceResponse;
 
     }
 
     @GetMapping
-    public ResponseEntity<?> findAllCourses() {
-
-        return new ResponseEntity<>(courseService.viewAllCourses(), HttpStatus.OK);// 200
+    public ServiceResponse<List<CourseResponseDTO>> findAllCourses() {
+       List<CourseResponseDTO>courseResponseDTOS = courseService.viewAllCourses();
+        return new ServiceResponse<>(HttpStatus.OK,courseResponseDTOS);// 200
     }
 
     @GetMapping("/search/path/{courseId}")
-    public ResponseEntity<?> findCourse(@PathVariable Integer courseId) {
-
-        return new ResponseEntity<>(courseService.findByCourseId(courseId), HttpStatus.OK);
+    public ServiceResponse<CourseResponseDTO> findCourse(@PathVariable Integer courseId) {
+ CourseResponseDTO  responseDTO =courseService.findByCourseId(courseId);
+        return new ServiceResponse<>(HttpStatus.OK, responseDTO);
     }
 
     @GetMapping("/search/request")
-    public ResponseEntity<?> findCourseUsingRequestParam(@RequestParam(required = false,defaultValue ="1") Integer courseId) {
+    public ServiceResponse<CourseResponseDTO> findCourseUsingRequestParam(@RequestParam(required = false,defaultValue ="1") Integer courseId) {
 
-        return new ResponseEntity<>(courseService.findByCourseId(courseId), HttpStatus.OK);
+        CourseResponseDTO  responseDTO =courseService.findByCourseId(courseId);
+        return new ServiceResponse<>(HttpStatus.OK, responseDTO);
     }
 
     // delete Course
@@ -63,9 +79,9 @@ public class CourseController {
     // Update the Course
 
     @PutMapping("/{courseId}")
-    public ResponseEntity<?> updateCourse(@PathVariable int courseId, @RequestBody Course course) {
-
-        return new ResponseEntity<>(courseService.updatCourse(courseId, course), HttpStatus.OK);
+    public ServiceResponse<CourseResponseDTO> updateCourse(@PathVariable int courseId, @RequestBody  CourseRequestDTO courseRequestDTO) {
+         CourseResponseDTO courseResponseDTO =courseService.updateCourse(courseId, courseRequestDTO) ;
+        return new ServiceResponse <>( HttpStatus.OK,courseResponseDTO);
     }
 
 }
