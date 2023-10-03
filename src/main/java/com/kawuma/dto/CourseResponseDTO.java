@@ -26,5 +26,7 @@ public class CourseResponseDTO {
    private boolean isCertifiedAvailable;
    private String description;
    private String courseUniqueCode;
+   private  String  emailId;
+   private String contact;
     
 }

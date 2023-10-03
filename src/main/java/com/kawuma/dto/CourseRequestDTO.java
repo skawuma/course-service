@@ -23,5 +23,8 @@ public class CourseRequestDTO {
    private double fees;
    private boolean isCertifiedAvailable;
    private String description;
+   private  String  emailId;
+   private String contact;
+   
     
 }
