@@ -2,6 +2,7 @@ package com.kawuma.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,9 @@ public class CourseController {
 
     // }
     @PostMapping("/add")
-    public ServiceResponse<CourseResponseDTO> addCourse(@RequestBody CourseRequestDTO courseRequestDTO) {
-
+    public ServiceResponse<CourseResponseDTO> addCourse(@RequestBody @Valid CourseRequestDTO courseRequestDTO) {
+      //validate request
+       // validateRequesrPayload(courseRequestDTO);
      ServiceResponse<CourseResponseDTO> serviceResponse= new ServiceResponse<>();
        try {
          CourseResponseDTO newCourse = courseService.onboardNewCourse(courseRequestDTO);
@@ -80,8 +82,24 @@ public class CourseController {
 
     @PutMapping("/{courseId}")
     public ServiceResponse<CourseResponseDTO> updateCourse(@PathVariable int courseId, @RequestBody  CourseRequestDTO courseRequestDTO) {
+        //validate request
+       // validateRequesrPayload(courseRequestDTO);
          CourseResponseDTO courseResponseDTO =courseService.updateCourse(courseId, courseRequestDTO) ;
         return new ServiceResponse <>( HttpStatus.OK,courseResponseDTO);
+    }
+
+    //Method to Validate Payload
+    private void validateRequesrPayload(CourseRequestDTO courseRequestDTO){
+
+        if (courseRequestDTO.getDuration()== null || courseRequestDTO.getDuration().isEmpty()){
+            throw new  RuntimeException("Duration Feild needs to be passed");
+
+        }
+        if(courseRequestDTO.getFees()==0){
+             throw new  RuntimeException("Fees value must be provided");  
+
+
+        }
     }
 
 }

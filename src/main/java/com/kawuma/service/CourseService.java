@@ -71,7 +71,7 @@ public class CourseService {
     // update the course
     public CourseResponseDTO updateCourse(int courseId, CourseRequestDTO courseRequestDTO) {
        CourseEntity existingCourseEntity = courseDao.findById(courseId).orElseThrow(null);
-       existingCourseEntity.setCourseId(courseRequestDTO.getCourseId());
+//       existingCourseEntity.setCourseId(courseRequestDTO.getCourseId());
        existingCourseEntity.setName(courseRequestDTO.getName());
        existingCourseEntity.setTrainerName(courseRequestDTO.getTrainerName());
        existingCourseEntity.setDuration(courseRequestDTO.getDuration());
