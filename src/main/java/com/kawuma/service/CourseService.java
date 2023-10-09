@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import com.kawuma.exception.CourseServiceBusinessException;
 import com.kawuma.util.AppUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -32,55 +33,63 @@ public class CourseService {
     // create course object in DB
     public CourseResponseDTO onboardNewCourse(CourseRequestDTO courseRequesDTO) {
 
-      // convert DTO TO ENTITY
+        // convert DTO TO ENTITY
         CourseEntity courseEntity = AppUtils.mapDTOToEntity(courseRequesDTO);
+        CourseEntity entity= null;
+        try {
+            entity = courseDao.save(courseEntity);
+        } catch (Exception exception) {
+            throw new CourseServiceBusinessException("onboardNewCourse service method failed");
+        }
+        // convert ENTITY TO DTO
 
+        CourseResponseDTO courseResponseDTO = AppUtils.mapEntityToDTO(entity);
+        courseResponseDTO.setCourseUniqueCode(UUID.randomUUID().toString().split("-")[0]);
+        return courseResponseDTO;
 
-        CourseEntity entity = courseDao.save(courseEntity);
-
-         // convert ENTITY TO DTO  
-
-         CourseResponseDTO courseResponseDTO =AppUtils.mapEntityToDTO(entity);
-         courseResponseDTO.setCourseUniqueCode(UUID.randomUUID().toString().split("-")[0]);
-         return courseResponseDTO;
- 
     }
-//load all the courses in the database
-    public List<CourseResponseDTO> viewAllCourses() {
 
-        Iterable<CourseEntity> courseEntities = courseDao.findAll();
-        return StreamSupport.stream(courseEntities.spliterator(), false)
-              .map(courseEntity ->AppUtils.mapEntityToDTO(courseEntity))
-              .collect(Collectors.toList());
-    
+    //load all the courses in the database
+    public List<CourseResponseDTO> viewAllCourses() {
+        Iterable<CourseEntity> courseEntities = null;
+        try {
+         courseEntities = courseDao.findAll();
+            return StreamSupport.stream(courseEntities.spliterator(), false)
+                    .map(courseEntity -> AppUtils.mapEntityToDTO(courseEntity))
+                    .collect(Collectors.toList());
+        } catch (Exception exception) {
+            throw new CourseServiceBusinessException("viewAllCourses service method failed");
+        }
+
+
     }
 
     // finding course by id
     public CourseResponseDTO findByCourseId(Integer courseId) {
         CourseEntity courseEntity = courseDao.findById(courseId)
-        .orElseThrow(() -> new RuntimeException(courseId +"not valid"));
-   return AppUtils.mapEntityToDTO(courseEntity);
+                .orElseThrow(() -> new CourseServiceBusinessException(courseId + " doesn't not exist in system"));
+        return AppUtils.mapEntityToDTO(courseEntity);
     }
 
     // delete course
     public void deleteCourse(int courseId) {
-      courseDao.deleteById(courseId);
+        courseDao.deleteById(courseId);
 
     }
 
     // update the course
     public CourseResponseDTO updateCourse(int courseId, CourseRequestDTO courseRequestDTO) {
-       CourseEntity existingCourseEntity = courseDao.findById(courseId).orElseThrow(null);
+        CourseEntity existingCourseEntity = courseDao.findById(courseId).orElseThrow(null);
 //       existingCourseEntity.setCourseId(courseRequestDTO.getCourseId());
-       existingCourseEntity.setName(courseRequestDTO.getName());
-       existingCourseEntity.setTrainerName(courseRequestDTO.getTrainerName());
-       existingCourseEntity.setDuration(courseRequestDTO.getDuration());
-       existingCourseEntity.setStartDate(courseRequestDTO.getStartDate());
-       existingCourseEntity.setCourseType(courseRequestDTO.getCourseType());
-       existingCourseEntity.setFees(courseRequestDTO.getFees());
-       existingCourseEntity.setCertifiedAvailable(courseRequestDTO.isCertifiedAvailable());
-       existingCourseEntity.setDescription(courseRequestDTO.getDescription());
-      CourseEntity updatedCourseEntity =courseDao.save(existingCourseEntity);
+        existingCourseEntity.setName(courseRequestDTO.getName());
+        existingCourseEntity.setTrainerName(courseRequestDTO.getTrainerName());
+        existingCourseEntity.setDuration(courseRequestDTO.getDuration());
+        existingCourseEntity.setStartDate(courseRequestDTO.getStartDate());
+        existingCourseEntity.setCourseType(courseRequestDTO.getCourseType());
+        existingCourseEntity.setFees(courseRequestDTO.getFees());
+        existingCourseEntity.setCertifiedAvailable(courseRequestDTO.isCertifiedAvailable());
+        existingCourseEntity.setDescription(courseRequestDTO.getDescription());
+        CourseEntity updatedCourseEntity = courseDao.save(existingCourseEntity);
         return AppUtils.mapEntityToDTO(updatedCourseEntity);
     }
 

@@ -3,6 +3,8 @@ package com.kawuma.controller;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,8 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/course")
 @AllArgsConstructor
 public class CourseController {
-       private CourseService courseService;
+    Logger log = LoggerFactory.getLogger(CourseController.class);
+    private CourseService courseService;
 
     // public CourseController(CourseService courseService) {
     //     this.courseService = courseService;
@@ -35,17 +38,13 @@ public class CourseController {
     // }
     @PostMapping("/add")
     public ServiceResponse<CourseResponseDTO> addCourse(@RequestBody @Valid CourseRequestDTO courseRequestDTO) {
-      //validate request
-       // validateRequesrPayload(courseRequestDTO);
-     ServiceResponse<CourseResponseDTO> serviceResponse= new ServiceResponse<>();
-       try {
-         CourseResponseDTO newCourse = courseService.onboardNewCourse(courseRequestDTO);
-        serviceResponse.setStatus(HttpStatus.CREATED);
-        serviceResponse.setResponse(newCourse);  
+        //validate request
+        // validateRequestPayload(courseRequestDTO);
+        ServiceResponse<CourseResponseDTO> serviceResponse = new ServiceResponse<>();
 
-       } catch (Exception e) {
-       serviceResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-       }
+        CourseResponseDTO newCourse = courseService.onboardNewCourse(courseRequestDTO);
+        serviceResponse.setStatus(HttpStatus.CREATED);
+        serviceResponse.setResponse(newCourse);
 
         //return new ServiceResponse<>( HttpStatus.CREATED,newCourse);// 201
         return serviceResponse;
@@ -54,20 +53,20 @@ public class CourseController {
 
     @GetMapping
     public ServiceResponse<List<CourseResponseDTO>> findAllCourses() {
-       List<CourseResponseDTO>courseResponseDTOS = courseService.viewAllCourses();
-        return new ServiceResponse<>(HttpStatus.OK,courseResponseDTOS);// 200
+        List<CourseResponseDTO> courseResponseDTOS = courseService.viewAllCourses();
+        return new ServiceResponse<>(HttpStatus.OK, courseResponseDTOS);// 200
     }
 
     @GetMapping("/search/path/{courseId}")
     public ServiceResponse<CourseResponseDTO> findCourse(@PathVariable Integer courseId) {
- CourseResponseDTO  responseDTO =courseService.findByCourseId(courseId);
+        CourseResponseDTO responseDTO = courseService.findByCourseId(courseId);
         return new ServiceResponse<>(HttpStatus.OK, responseDTO);
     }
 
     @GetMapping("/search/request")
-    public ServiceResponse<CourseResponseDTO> findCourseUsingRequestParam(@RequestParam(required = false,defaultValue ="1") Integer courseId) {
+    public ServiceResponse<CourseResponseDTO> findCourseUsingRequestParam(@RequestParam(required = false, defaultValue = "1") Integer courseId) {
 
-        CourseResponseDTO  responseDTO =courseService.findByCourseId(courseId);
+        CourseResponseDTO responseDTO = courseService.findByCourseId(courseId);
         return new ServiceResponse<>(HttpStatus.OK, responseDTO);
     }
 
@@ -81,25 +80,37 @@ public class CourseController {
     // Update the Course
 
     @PutMapping("/{courseId}")
-    public ServiceResponse<CourseResponseDTO> updateCourse(@PathVariable int courseId, @RequestBody  CourseRequestDTO courseRequestDTO) {
+    public ServiceResponse<CourseResponseDTO> updateCourse(@PathVariable int courseId, @RequestBody CourseRequestDTO courseRequestDTO) {
         //validate request
-       // validateRequesrPayload(courseRequestDTO);
-         CourseResponseDTO courseResponseDTO =courseService.updateCourse(courseId, courseRequestDTO) ;
-        return new ServiceResponse <>( HttpStatus.OK,courseResponseDTO);
+        // validateRequesrPayload(courseRequestDTO);
+        CourseResponseDTO courseResponseDTO = courseService.updateCourse(courseId, courseRequestDTO);
+        return new ServiceResponse<>(HttpStatus.OK, courseResponseDTO);
     }
 
     //Method to Validate Payload
-    private void validateRequesrPayload(CourseRequestDTO courseRequestDTO){
+    private void validateRequestPayload(CourseRequestDTO courseRequestDTO) {
 
-        if (courseRequestDTO.getDuration()== null || courseRequestDTO.getDuration().isEmpty()){
-            throw new  RuntimeException("Duration Feild needs to be passed");
-
-        }
-        if(courseRequestDTO.getFees()==0){
-             throw new  RuntimeException("Fees value must be provided");  
-
+        if (courseRequestDTO.getDuration() == null || courseRequestDTO.getDuration().isEmpty()) {
+            throw new RuntimeException("Duration Feild needs to be passed");
 
         }
+        if (courseRequestDTO.getFees() == 0) {
+            throw new RuntimeException("Fees value must be provided");
+
+
+        }
+    }
+
+    @GetMapping("/log")
+    public String logginglevel() {
+
+        log.trace("trace message");
+        log.debug("debug message");
+        log.info("info message");
+        log.warn("trace message");
+        log.error("error message");
+
+        return "log printed in console";
     }
 
 }
