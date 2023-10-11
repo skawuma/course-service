@@ -1,5 +1,7 @@
 package com.kawuma.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kawuma.dto.CourseRequestDTO;
 import com.kawuma.dto.CourseResponseDTO;
 import com.kawuma.entity.CourseEntity;
@@ -24,7 +26,7 @@ public class AppUtils {
 
 
     }
- public static CourseResponseDTO mapEntityToDTO(CourseEntity courseEntity){
+ public static CourseResponseDTO mapEntityToDTO(CourseEntity courseEntity) {
      CourseResponseDTO courseResponseDTO = new CourseResponseDTO();
      courseResponseDTO.setCourseId(courseEntity.getCourseId());
      courseResponseDTO.setName(courseEntity.getName());
@@ -39,11 +41,21 @@ public class AppUtils {
      courseResponseDTO.setContact(courseEntity.getContact());
      return courseResponseDTO;
 
-    
-
-
-
-
-
  }
+
+public static String convertObjectToJson(Object object)  {
+    try{
+       return  new ObjectMapper().writeValueAsString(object);
+    }catch(JsonProcessingException e){
+        e.printStackTrace();
+
+
+    }
+    return null;
+
+     }
+
+
+
+
 }

@@ -2,6 +2,7 @@ package com.kawuma.controller;
 
 import java.util.List;
 
+import com.kawuma.util.AppUtils;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,25 +28,28 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/course")
-@AllArgsConstructor
 public class CourseController {
+
     Logger log = LoggerFactory.getLogger(CourseController.class);
+
+    @Autowired
     private CourseService courseService;
 
-    // public CourseController(CourseService courseService) {
-    //     this.courseService = courseService;
+    public CourseController(CourseService courseService) {
+       this.courseService = courseService;
+   }
 
-    // }
     @PostMapping("/add")
     public ServiceResponse<CourseResponseDTO> addCourse(@RequestBody @Valid CourseRequestDTO courseRequestDTO) {
         //validate request
         // validateRequestPayload(courseRequestDTO);
+        log.info("CourseController:: addCourse method Request payload :{}", AppUtils.convertObjectToJson(courseRequestDTO));
         ServiceResponse<CourseResponseDTO> serviceResponse = new ServiceResponse<>();
 
         CourseResponseDTO newCourse = courseService.onboardNewCourse(courseRequestDTO);
         serviceResponse.setStatus(HttpStatus.CREATED);
         serviceResponse.setResponse(newCourse);
-
+        log.info("CourseController:: addCourse method Request payload :{}", AppUtils.convertObjectToJson(serviceResponse));
         //return new ServiceResponse<>( HttpStatus.CREATED,newCourse);// 201
         return serviceResponse;
 
@@ -73,6 +77,7 @@ public class CourseController {
     // delete Course
     @DeleteMapping("/{courseId}")
     public ResponseEntity<?> deleteCourse(@PathVariable int courseId) {
+        log.info("CourseController:: deleteCourse deleting a course with id {}", courseId);
         courseService.deleteCourse(courseId);
         return new ResponseEntity<>("", HttpStatus.NO_CONTENT);
 
@@ -82,16 +87,20 @@ public class CourseController {
     @PutMapping("/{courseId}")
     public ServiceResponse<CourseResponseDTO> updateCourse(@PathVariable int courseId, @RequestBody CourseRequestDTO courseRequestDTO) {
         //validate request
-        // validateRequesrPayload(courseRequestDTO);
+        // validateRequestPayload(courseRequestDTO);
+        log.info("CourseController::update method Request payload :{} and {}", AppUtils.convertObjectToJson(courseRequestDTO), courseId);
         CourseResponseDTO courseResponseDTO = courseService.updateCourse(courseId, courseRequestDTO);
-        return new ServiceResponse<>(HttpStatus.OK, courseResponseDTO);
+        ServiceResponse<CourseResponseDTO> response = new ServiceResponse<>(HttpStatus.OK, courseResponseDTO);
+        log.info("CourseController:: addCourse method Request payload :{}", AppUtils.convertObjectToJson(response), courseId);
+        return response;
     }
+
 
     //Method to Validate Payload
     private void validateRequestPayload(CourseRequestDTO courseRequestDTO) {
 
         if (courseRequestDTO.getDuration() == null || courseRequestDTO.getDuration().isEmpty()) {
-            throw new RuntimeException("Duration Feild needs to be passed");
+            throw new RuntimeException("Duration Field needs to be passed");
 
         }
         if (courseRequestDTO.getFees() == 0) {
@@ -102,7 +111,7 @@ public class CourseController {
     }
 
     @GetMapping("/log")
-    public String logginglevel() {
+    public String loggingLevel() {
 
         log.trace("trace message");
         log.debug("debug message");
