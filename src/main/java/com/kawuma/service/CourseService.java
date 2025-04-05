@@ -65,7 +65,7 @@ public class CourseService {
         try {
             courseEntities = courseDao.findAll();
             return StreamSupport.stream(courseEntities.spliterator(), false)
-                    .map(courseEntity -> AppUtils.mapEntityToDTO(courseEntity))
+                    .map(AppUtils::mapEntityToDTO)
                     .collect(Collectors.toList());
         } catch (Exception exception) {
             throw new CourseServiceBusinessException("viewAllCourses service method failed");

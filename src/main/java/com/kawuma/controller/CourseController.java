@@ -3,6 +3,11 @@ package com.kawuma.controller;
 import java.util.List;
 
 import com.kawuma.util.AppUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +38,22 @@ public class CourseController {
     Logger log = LoggerFactory.getLogger(CourseController.class);
 
     @Autowired
-    private CourseService courseService;
+    private final CourseService courseService;
 
     public CourseController(CourseService courseService) {
        this.courseService = courseService;
    }
 
+    @Operation(summary ="Add a new Course to the System")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",description ="course Added Successfully",
+                    content= {
+                            @Content(mediaType = "application/json",schema = @Schema(implementation = CourseResponseDTO.class))
+
+                    }),
+            @ApiResponse(responseCode = "400", description = "Validation Error")
+    }
+    )
     @PostMapping("/add")
     public ServiceResponse<CourseResponseDTO> addCourse(@RequestBody @Valid CourseRequestDTO courseRequestDTO) {
         //validate request
@@ -50,23 +65,34 @@ public class CourseController {
         serviceResponse.setStatus(HttpStatus.CREATED);
         serviceResponse.setResponse(newCourse);
         log.info("CourseController:: addCourse method Request payload :{}", AppUtils.convertObjectToJson(serviceResponse));
-        //return new ServiceResponse<>( HttpStatus.CREATED,newCourse);// 201
-        return serviceResponse;
+        return new ServiceResponse<>( HttpStatus.CREATED,newCourse);// 201
+        //return serviceResponse;
 
     }
 
+    @Operation(summary ="Fetch All Course Objects")
     @GetMapping
     public ServiceResponse<List<CourseResponseDTO>> findAllCourses() {
         List<CourseResponseDTO> courseResponseDTOS = courseService.viewAllCourses();
         return new ServiceResponse<>(HttpStatus.OK, courseResponseDTOS);// 200
     }
 
+    @Operation(summary ="Find course by courseId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description ="course found",
+            content ={
+                @Content(mediaType = "application/json",schema = @Schema(implementation = CourseResponseDTO.class))
+
+            }),
+            @ApiResponse(responseCode = "400", description = "course not found with given id")
+    }
+    )
     @GetMapping("/search/path/{courseId}")
     public ServiceResponse<CourseResponseDTO> findCourse(@PathVariable Integer courseId) {
         CourseResponseDTO responseDTO = courseService.findByCourseId(courseId);
         return new ServiceResponse<>(HttpStatus.OK, responseDTO);
     }
-
+    @Operation(summary ="Search Course By CourseID using RequestParam")
     @GetMapping("/search/request")
     public ServiceResponse<CourseResponseDTO> findCourseUsingRequestParam(@RequestParam(required = false, defaultValue = "1") Integer courseId) {
 
@@ -75,6 +101,7 @@ public class CourseController {
     }
 
     // delete Course
+    @Operation(summary ="Delete Course By CourseId")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<?> deleteCourse(@PathVariable int courseId) {
         log.info("CourseController:: deleteCourse deleting a course with id {}", courseId);
@@ -84,6 +111,7 @@ public class CourseController {
     }
     // Update the Course
 
+    @Operation(summary ="Modify Course By CourseId")
     @PutMapping("/{courseId}")
     public ServiceResponse<CourseResponseDTO> updateCourse(@PathVariable int courseId, @RequestBody CourseRequestDTO courseRequestDTO) {
         //validate request
@@ -98,15 +126,11 @@ public class CourseController {
 
     //Method to Validate Payload
     private void validateRequestPayload(CourseRequestDTO courseRequestDTO) {
-
         if (courseRequestDTO.getDuration() == null || courseRequestDTO.getDuration().isEmpty()) {
             throw new RuntimeException("Duration Field needs to be passed");
-
         }
         if (courseRequestDTO.getFees() == 0) {
             throw new RuntimeException("Fees value must be provided");
-
-
         }
     }
 

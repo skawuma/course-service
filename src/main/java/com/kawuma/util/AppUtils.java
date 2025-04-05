@@ -45,7 +45,7 @@ public class AppUtils {
 
 public static String convertObjectToJson(Object object)  {
     try{
-       return  new ObjectMapper().writeValueAsString(object);
+       return new ObjectMapper().writeValueAsString(object);
     }catch(JsonProcessingException e){
         e.printStackTrace();
 

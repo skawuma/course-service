@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kawuma.annotation.CourseTypeValidation;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -14,6 +15,7 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class CourseRequestDTO {
   @NotBlank(message = "Course Name cannot be Null or Empty")
    private String name;
